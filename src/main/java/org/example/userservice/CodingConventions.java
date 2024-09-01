@@ -117,9 +117,4 @@ Example Workflow:
     Service Converts DTO to Model: The service converts the DTO to a model entity, processes it, and performs the necessary business logic.
     Service Returns Result: The service might return a GetDto or another DTO that the controller will use to construct the HTTP response.
 
-**/
-
-package org.example.userservice;
-
-public class CodingConventions {
-}
+*/

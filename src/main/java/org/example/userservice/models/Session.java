@@ -16,7 +16,7 @@ import java.util.Date;
 @Setter
 @Entity
 public class Session extends BaseModel {
-    private String token;
+    private String token;   // JWT token
     private Date expiringAt;
 
     @Enumerated(EnumType.ORDINAL)

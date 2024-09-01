@@ -12,11 +12,11 @@ public class SignUpRequestDto {
     private String password;
 
     // This method is used to convert a SignUpRequestDto(DTO) object to a User(Model) object
-    public static User toUser(SignUpRequestDto signUpRequestDto) {
+    public static User toUser(String email, String password) {
         User user = new User();
 
-        user.setEmail(signUpRequestDto.getEmail());
-        user.setPassword(signUpRequestDto.getPassword());
+        user.setEmail(email);
+        user.setPassword(password);
 
         return user;
     }

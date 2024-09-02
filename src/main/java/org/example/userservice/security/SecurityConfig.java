@@ -132,6 +132,17 @@
          Created using the private key
          Verified using the public key
 
+ C. TODO [Postman Authentication Configuration]:
+ Go to Authorization Tab in Postman
+ Choose OAuth 2.0 as the Authorization Type
+    1. Auth URL: http://localhost:8080/oauth2/authorize
+    2. Access Token URL: http://localhost:8080/oauth2/token
+    3. Client ID: postman
+    4. Client Secret: password
+    5. Scope: images contacts (Permissions: Authorization)
+    6. (Tick) Authorize using browser
+    7. Add Callback URL -->  Redirect URI (Database): https://oauth.pstmn.io/v1/callback
+
  */
 
 package org.example.userservice.security;
@@ -240,7 +251,7 @@ public class SecurityConfig {
 //    public RegisteredClientRepository registeredClientRepository() {
 //        RegisteredClient oidcClient = RegisteredClient.withId(UUID.randomUUID().toString())
 //                .clientId("postman")
-//                .clientSecret("password")
+//                .clientSecret(passwordEncoder.encode"password"))  // Password is encoded using BCryptPasswordEncoder
 //                .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
 //                .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
 //                .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)

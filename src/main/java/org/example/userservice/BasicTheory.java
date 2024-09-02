@@ -1,5 +1,5 @@
 /**
- 1. TODO [OAuth, Single Sign-On (SSO)]:
+ A. TODO [OAuth, Single Sign-On (SSO)]:
 
  OAuth (Open Authorization)
  * Purpose: OAuth is primarily used for authorization, not authentication. It allows an application (client) to access resources on behalf of a user, without exposing the user’s credentials to the application.
@@ -42,7 +42,7 @@
  * Authentication —> Authorization
 
 
- 2. TODO [The authentication provider (e.g., Google, Apple) issues an access token to the application as a result of the OAuth authorization flow]:
+ B. TODO [The authentication provider (e.g., Google, Apple) issues an access token to the application as a result of the OAuth authorization flow]:
 
  Here's a breakdown of how this process typically works:
  1. User Authorization: When a user logs in to LinkedIn using their Google or Apple account, they are redirected to the authentication provider's website. The user is prompted to grant permission to LinkedIn to access their data.
@@ -55,7 +55,7 @@
  In essence, the authentication provider acts as a trusted intermediary, issuing the access token to LinkedIn based on the user's authorization. This ensures that LinkedIn only has access to the data that the user has explicitly granted permission for.
 
 
- 3. TODO [Token vs. JWT: A Comparison]:
+ C. TODO [Token vs. JWT: A Comparison]:
  Tokens and JSON Web Tokens (JWTs) are both mechanisms used for authentication and authorization in web applications, but they have distinct characteristics and use cases.
 
  Tokens
@@ -127,5 +127,67 @@
  3. Limit the number of users watching at the same same (Netflix, JioCinema, Hotstar)
 
  JWTs are self-contained, meaning they contain all the necessary information about the user and their permissions within the token itself. This makes them ideal for use in stateless applications and microservices where maintaining server-side session state is not desirable. JWTs are commonly used in modern web applications and APIs for authentication and authorization purposes.
+
+
+ D. TODO [OAuth 1.0 vs OAuth 2.0]:
+ 1. Authorization Flow:
+     OAuth 1.0:
+         Relies on cryptographic signatures for each request, making it more complex.
+         Involves multiple steps, including obtaining a Request Token, redirecting the user for authorization, and then exchanging the Request Token for an Access Token.
+     OAuth 2.0:
+         Simplifies the process by using access tokens (typically bearer tokens), which don't require signing each request.
+         Offers multiple grant types (authorization code, client credentials, implicit, password, etc.) to accommodate various use cases.
+ 2. Security Mechanism:
+     OAuth 1.0:
+         Uses HMAC-SHA1 or RSA-SHA1 for signing requests.
+         Requires both a Consumer Key/Secret and a Token/Token Secret for every request, ensuring that requests can't be tampered with.
+     OAuth 2.0:
+         Primarily relies on HTTPS to secure communication, with tokens being passed in headers or query parameters.
+         Access tokens are typically Bearer tokens, which can be used by anyone who has them, making the use of HTTPS crucial for security.
+         Optional extensions, such as Proof Key for Code Exchange (PKCE) and OAuth 2.1, improve security by adding mechanisms to prevent attacks.
+ 3. Complexity:
+    OAuth 1.0:
+         More complex due to the signature-based authentication, requiring the generation of cryptographic signatures for each request.
+         More challenging to implement and debug because of the complexity of signing and verifying each request.
+    OAuth 2.0:
+         Simplified, with a focus on ease of implementation.
+         No need to sign each request, reducing the complexity for developers.
+         However, OAuth 2.0 is also flexible, with optional components that can add complexity if needed (e.g., token introspection, revocation, scopes).
+ 4. Use Cases:
+     OAuth 1.0:
+         Designed primarily for web applications.
+         Ideal for cases where a high level of security and integrity is required, but at the cost of added complexity.
+     OAuth 2.0:
+         Designed for a broader range of applications, including mobile and native apps, single-page applications (SPAs), and traditional web applications.
+         More suitable for modern, distributed architectures due to its flexibility and the availability of various grant types.
+ 5. Deprecation and Adoption:
+     OAuth 1.0:
+         Largely deprecated in favor of OAuth 2.0 due to its complexity and the difficulty of implementation.
+         Still used in some legacy systems, but not recommended for new projects.
+     OAuth 2.0:
+         The industry standard for authorization today, widely adopted by major platforms like Google, Facebook, GitHub, and others.
+         Continually evolving with security improvements (e.g., OAuth 2.1, which is designed to address some of the security concerns in OAuth 2.0).
+ 6. Token Types:
+     OAuth 1.0:
+        Uses Request Tokens and Access Tokens, with the latter requiring both a token and a token secret.
+     OAuth 2.0:
+        Uses Bearer tokens (most common), JWT (JSON Web Tokens), or MAC tokens (less common).
+ 7. Token Expiration and Revocation:
+     OAuth 1.0:
+        Token revocation is manual and less standardized.
+     OAuth 2.0:
+         Supports refresh tokens, allowing access tokens to be refreshed without requiring user interaction.
+         Supports token revocation and introspection endpoints for better management.
+ 8. Resource Access:
+     OAuth 1.0:
+        Each request must include a signature, and the server verifies this signature to ensure the integrity and authenticity of the request.
+     OAuth 2.0:
+        Requests are authenticated by simply including a token in the HTTP Authorization header. Security is ensured through HTTPS.
+
+ Summary:
+     OAuth 1.0 offers more security through request signatures but is complex and difficult to implement, leading to it being largely deprecated.
+     OAuth 2.0 is easier to implement, more flexible, and supports a wider range of use cases, but relies heavily on HTTPS for security. It's the industry standard today and continues to evolve with updates like OAuth 2.1.
+
+ For new applications, OAuth 2.0 is generally recommended due to its flexibility, ease of use, and widespread support.
 
  */

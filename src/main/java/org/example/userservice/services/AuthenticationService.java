@@ -17,6 +17,7 @@ import org.example.userservice.models.Session;
 import org.example.userservice.models.User;
 import org.example.userservice.repository.SessionRepository;
 import org.example.userservice.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -26,16 +27,17 @@ import java.util.*;
 
 @Service
 public class AuthenticationService {
-    private final UserRepository userRepository;    // Dependency Injection
-    private final SessionRepository sessionRepository;  // Dependency Injection
+    @Autowired
+    private UserRepository userRepository;    // Dependency Injection
+    @Autowired
+    private SessionRepository sessionRepository;  // Dependency Injection
     private BCryptPasswordEncoder passwordEncoder;  // Password Encoder
     // private SecretKey key = Jwts.SIG.HS256.key().build();    // This key changes each time you restart the server
     private SecretKey key = Keys.hmacShaKeyFor("nishantisveryveryveryveryveryveryverycool".getBytes(StandardCharsets.UTF_8));     // This key is constant key
 
-    public AuthenticationService(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder, SessionRepository sessionRepository) {    // Constructor Injection (Repository Injection)
-        this.userRepository = userRepository;
+    // Constructor Injection
+    public AuthenticationService(BCryptPasswordEncoder passwordEncoder) {
         this.passwordEncoder = passwordEncoder;
-        this.sessionRepository = sessionRepository;
     }
 
     public Boolean signup(SignUpRequestDto signUpRequestDto) throws UserAlreadyPresentException {
@@ -122,6 +124,12 @@ public class AuthenticationService {
         return token;
     }
 
+    /*
+      To validate token
+        1. Check if token value is present
+        2. Check if token is not deleted
+        3. Check if token is not expired
+    */
     public boolean validate(String token) {
         try {
             // Parse the token and verify the signature using the key (secret key)  => Decrypt(A+B, key) --> This will throw an exception if the token is invalid or has expired

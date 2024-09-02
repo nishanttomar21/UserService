@@ -32,7 +32,7 @@
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
+            <artifactId>spring-boot-starter-web</artifactId>    <!-- Don't need to provide the version for spring-boot-starter-{name} as spring-boot-starter-parent is already mentioned at the top -->
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -97,6 +97,22 @@
             <artifactId>jjwt-jackson</artifactId> <!-- Jackson is a popular Java library used in Spring Boot for converting Java objects to JSON (serialization) and JSON to Java objects (deserialization). It is the default JSON processor in Spring Boot, meaning that when your Spring Boot application deals with JSON data, Jackson is typically used under the hood. -->
             <version>0.12.6</version>
             <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-oauth2-authorization-server</artifactId>    <!-- To add dependency for OAuth2 Authorization Server -->
+        </dependency>
+        <!-- Spring Security CAS -->
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-cas</artifactId>    <!-- Add this dependency otherwise will get Error - Cannot load module org.springframework.security.cas.jackson2.CasJackson2Module -->
+            <version>6.3.3</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.bouncycastle</groupId>
+                    <artifactId>bcprov-jdk15on</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
 

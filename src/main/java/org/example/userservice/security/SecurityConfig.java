@@ -4,6 +4,7 @@
  InMemoryUserDetailsManager - It's a simple in-memory implementation of the UserDetailsService interface, used to store and retrieve user details within a Spring Boot application.
  SecurityContext - SecurityContext is a core concept in Spring Security that represents the security information associated with the current execution thread. It's an interface that holds details about the currently authenticated user and their granted authorities.
  JWKSource - JWKSource stands for JSON Web Key Source. It's an interface used in the context of cryptographic operations, particularly in OAuth 2.0 and OpenID Connect implementations.
+ Springboot security internally implements a login page and handles authentication and authorization.
 
  1. authorizationServerSecurityFilterChain()
  authorizationServerSecurityFilterChain() is a method that returns a SecurityFilterChain object, which is used by Spring Security to configure the security settings for the application.
@@ -50,9 +51,9 @@
  RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();: This extracts the public key from the key pair.
  RSAPrivateKey privateKey = (RSAPrivateKey) keyPair.getPrivate();: This extracts the private key from the key pair.
  RSAKey rsaKey = new RSAKey.Builder(publicKey)...: This creates a new RSAKey object, which is a representation of an RSA key in the JWK format. It includes:
-     The public key
-     The private key
-     A randomly generated key ID (kid)
+ The public key
+ The private key
+ A randomly generated key ID (kid)
  JWKSet jwkSet = new JWKSet(rsaKey);: This creates a new JWK Set containing the RSA key. A JWK Set is a JSON object that represents a set of cryptographic keys.
  return new ImmutableJWKSet<>(jwkSet);: This creates and returns an immutable JWK Set, which is a thread-safe implementation of JWKSource<SecurityContext>.
 
@@ -73,10 +74,10 @@
  The created JwtDecoder is configured to use the keys from the provided JWKSource to verify the signatures of incoming JWTs.
 
  The purpose of this JwtDecoder is to:
-     Parse incoming JWTs: It can take a JWT string and parse it into its component parts (header, payload, and signature).
-     Verify JWT signatures: Using the public keys from the JWKSource, it can verify that the JWT was indeed signed by the corresponding private key and hasn't been tampered with.
-     Validate JWT claims: It can check various claims in the JWT, such as expiration time, issuer, audience, etc., to ensure the token is valid and intended for use in this particular context.
-     Extract information: Once verified, it can extract the claims and other information from the JWT for use in authentication and authorization decisions.
+ Parse incoming JWTs: It can take a JWT string and parse it into its component parts (header, payload, and signature).
+ Verify JWT signatures: Using the public keys from the JWKSource, it can verify that the JWT was indeed signed by the corresponding private key and hasn't been tampered with.
+ Validate JWT claims: It can check various claims in the JWT, such as expiration time, issuer, audience, etc., to ensure the token is valid and intended for use in this particular context.
+ Extract information: Once verified, it can extract the claims and other information from the JWT for use in authentication and authorization decisions.
 
  This JwtDecoder is a crucial component in the OAuth2 flow, particularly when the authorization server issues JWTs as access tokens or ID tokens. It allows the resource server (or any other component that needs to verify JWTs) to securely validate and extract information from these tokens.
  By using the same JWKSource that was used to create the tokens, this decoder ensures that only tokens created by the authorized issuer (your authorization server) will be accepted and properly decoded.
@@ -97,51 +98,51 @@
 
  B. TODO [Public Key vs Private Key]:
  Public Key:
-     Freely distributed and shared with anyone
-     Used for encryption and verification of digital signatures
-     Cannot be used to derive the private key
-     Often represented by a long string of characters
+ Freely distributed and shared with anyone
+ Used for encryption and verification of digital signatures
+ Cannot be used to derive the private key
+ Often represented by a long string of characters
  Private Key:
-     Kept secret by the owner
-     Used for decryption and creation of digital signatures
-     Must be protected and never shared
-     Mathematically related to the public key, but computationally infeasible to derive from it
+ Kept secret by the owner
+ Used for decryption and creation of digital signatures
+ Must be protected and never shared
+ Mathematically related to the public key, but computationally infeasible to derive from it
 
  1. Data -----------------> Public Key -----------------> Encrypted Data (confidentiality)
-    Encrypted Data -------> Private Key ----------------> Data
+ Encrypted Data -------> Private Key ----------------> Data
  2. Data -----------------> Private Key ----------------> Digital Signature (authenticity and integrity)
-    (Data + Signature) ---> Private Key ----------------> Data
+ (Data + Signature) ---> Private Key ----------------> Data
 
  Digital signatures is used for authentication and non-repudiation, ensuring that the sender of a message cannot deny having sent it. Signatures are used for verifying the integrity and authenticity of the token. The signature is created using the private key and verified using the public key.
 
  Key differences:
-     Distribution:
-         Public key: Widely distributed
-         Private key: Kept secret
-     Usage:
-         Public key: Encrypt data, verify signatures
-         Private key: Decrypt data, create signatures
-     Security:
-         Public key: Can be freely shared without compromising security
-         Private key: Must be kept secure; if compromised, the entire system is at risk
-     Relationship:
-        They are mathematically related, but it's computationally infeasible to derive the private key from the public key
-     Encryption/Decryption:
-         Data encrypted with the public key can only be decrypted with the corresponding private key
-     Digital Signatures:
-         Created using the private key
-         Verified using the public key
+ Distribution:
+ Public key: Widely distributed
+ Private key: Kept secret
+ Usage:
+ Public key: Encrypt data, verify signatures
+ Private key: Decrypt data, create signatures
+ Security:
+ Public key: Can be freely shared without compromising security
+ Private key: Must be kept secure; if compromised, the entire system is at risk
+ Relationship:
+ They are mathematically related, but it's computationally infeasible to derive the private key from the public key
+ Encryption/Decryption:
+ Data encrypted with the public key can only be decrypted with the corresponding private key
+ Digital Signatures:
+ Created using the private key
+ Verified using the public key
 
  C. TODO [Postman Authentication Configuration]:
  Go to Authorization Tab in Postman
  Choose OAuth 2.0 as the Authorization Type
-    1. Auth URL: http://localhost:8080/oauth2/authorize
-    2. Access Token URL: http://localhost:8080/oauth2/token
-    3. Client ID: postman
-    4. Client Secret: password
-    5. Scope: images contacts (Permissions: Authorization)
-    6. (Tick) Authorize using browser
-    7. Add Callback URL -->  Redirect URI (Database): https://oauth.pstmn.io/v1/callback
+ 1. Auth URL: http://localhost:8080/oauth2/authorize
+ 2. Access Token URL: http://localhost:8080/oauth2/token
+ 3. Client ID: postman
+ 4. Client Secret: password
+ 5. Scope: images contacts (Permissions: Authorization)
+ 6. (Tick) Authorize using browser
+ 7. Add Callback URL -->  Redirect URI (Database): https://oauth.pstmn.io/v1/callback
 
  */
 
@@ -243,11 +244,11 @@ public class SecurityConfig {
     // @Bean
     // An instance of RegisteredClientRepository for managing clients.
     // Responsible for managing the registered clients that are allowed to interact with the OAuth2 authorization server ( this code sets up a single registered client with the ID "oidc-client" that uses the "client secret basic" authentication method, the "authorization code" and "refresh token" grant types, and the "openid" and "profile" scopes. The client is configured to require authorization consent from the user, and the redirect and post-logout redirect URIs are set to local development URLs.)
-     /** Use only when not using JPA otherwise will get the following error:
-          Parameter 0 of method setFilterChains in org.springframework.security.config.annotation.web.configuration.WebSecurityConfiguration required a single bean, but 2 were found:
-    	        - jpaRegisteredClientRepository: defined in file [/Users/nishanttomar21/IntelliJ IDEA/User Service/target/classes/org/example/userservice/security/repositories/JpaRegisteredClientRepository.class]
-    	        - registeredClientRepository: defined by method 'registeredClientRepository' in class path resource [org/example/userservice/security/SecurityConfig.class]
-      */
+    /** Use only when not using JPA otherwise will get the following error:
+     Parameter 0 of method setFilterChains in org.springframework.security.config.annotation.web.configuration.WebSecurityConfiguration required a single bean, but 2 were found:
+     - jpaRegisteredClientRepository: defined in file [/Users/nishanttomar21/IntelliJ IDEA/User Service/target/classes/org/example/userservice/security/repositories/JpaRegisteredClientRepository.class]
+     - registeredClientRepository: defined by method 'registeredClientRepository' in class path resource [org/example/userservice/security/SecurityConfig.class]
+     */
 //    public RegisteredClientRepository registeredClientRepository() {
 //        RegisteredClient oidcClient = RegisteredClient.withId(UUID.randomUUID().toString())
 //                .clientId("postman")
@@ -262,7 +263,7 @@ public class SecurityConfig {
 //                .clientSettings(ClientSettings.builder().requireAuthorizationConsent(true).build())
 //                .build();
 //
-//        return new InMemoryRegisteredClientRepository(oidcClient); // In-memory --> Database (Hence commented code), In-memory is used for testing purpose only
+//        return new InMemoryRegisteredClientRepository(oidcClient); // In-memory --> Database (Hence commented code), In-memory is used for testing and development purpose only and not for production.
 //    }
 
     @Bean

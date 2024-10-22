@@ -1,8 +1,10 @@
 // ResponseEntity - The ResponseEntity class in Spring is a powerful way to represent the entire HTTP response, including the status code, headers, and body. It's often used in controllers to return responses from RESTful APIs. Using ResponseEntity in Spring Boot is optional but highly recommended, especially when you want to have fine-grained control over your HTTP responses
+// [Important] Run Service Discover codebase before running this User Service
 
 package org.example.userservice.controllers;
 
 import org.example.userservice.dtos.*;
+import org.example.userservice.exceptions.UserAlreadyPresentException;
 import org.example.userservice.services.AuthenticationService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,8 +22,9 @@ public class AuthenticationController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<SignUpResponseDto> signup(@RequestBody SignUpRequestDto signUpRequestDto) {
+    public ResponseEntity<SignUpResponseDto> signup(@RequestBody SignUpRequestDto signUpRequestDto) throws UserAlreadyPresentException {
         SignUpResponseDto response = new SignUpResponseDto();
+        authenticationService.signup(signUpRequestDto);
 
         try {
             if (authenticationService.signup(signUpRequestDto)) {

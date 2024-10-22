@@ -117,4 +117,22 @@ Example Workflow:
     Service Converts DTO to Model: The service converts the DTO to a model entity, processes it, and performs the necessary business logic.
     Service Returns Result: The service might return a GetDto or another DTO that the controller will use to construct the HTTP response.
 
-*/
+D. TODO [Beans in Spring and their scopes]:
+
+The @Bean annotation in Java Spring framework typically creates a single instance of a class by default, but there are some nuances to understand:
+
+Singleton scope: By default, @Bean creates a singleton instance, meaning only one instance of the bean is created and shared across the application context.
+Prototype scope: You can change this behavior by explicitly specifying a different scope:
+
+ @Bean
+ @Scope("prototype")
+ public MyClass myBean() {
+ return new MyClass();
+ }
+ This will create a new instance every time the bean is requested.
+
+ Other scopes: Spring also supports other scopes like request, session, and application for web applications.
+ Configuration class: The class containing the @Bean method should be annotated with @Configuration to ensure proper behavior.
+ Method invocation: If a @Bean method is called directly from another @Bean method in the same configuration class, it doesn't create a new instance but returns the existing singleton instance.
+
+ */

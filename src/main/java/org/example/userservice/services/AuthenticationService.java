@@ -1,13 +1,18 @@
 // hmacShaKeyFor() is a static method in the Keys class that generates a secret key from the given byte array. The byte array is the secret key that is used to sign the JWT. The key is generated using the HMAC algorithm with SHA-256 as the hash function. The key is then used to sign the JWT.
 // We can validate JWT without any storage by using the Jwts.parser().verifyWith(key).build().parseSignedClaims(token) method. This method parses the JWT token and returns the claims stored in the token. If the token is invalid or has expired, it will throw an exception.
-// TODO: Get the claims from the token (check if user is only allowed to have 2 active sessions at a time)
+// ObjectMapper - A fast JSON parser and generator for Java. It can be used to convert Java objects to JSON and vice versa.
+// TODO: Get the claims from the token (check that user is only allowed to have 2 active sessions at a time)
 
 package org.example.userservice.services;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import org.example.userservice.client.KafkaProducerClient;
+import org.example.userservice.dtos.EmailDto;
 import org.example.userservice.dtos.LoginRequestDto;
 import org.example.userservice.dtos.SignUpRequestDto;
 import org.example.userservice.exceptions.UserAlreadyPresentException;
@@ -29,11 +34,21 @@ import java.util.*;
 public class AuthenticationService {
     @Autowired
     private UserRepository userRepository;    // Dependency Injection
+
     @Autowired
     private SessionRepository sessionRepository;  // Dependency Injection
+
     private BCryptPasswordEncoder passwordEncoder;  // Password Encoder
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
     // private SecretKey key = Jwts.SIG.HS256.key().build();    // This key changes each time you restart the server
     private SecretKey key = Keys.hmacShaKeyFor("nishantisveryveryveryveryveryveryverycool".getBytes(StandardCharsets.UTF_8));     // This key is constant key
+
+    @Autowired
+    private KafkaProducerClient kafkaProducerClient;
+
 
     // Constructor Injection
     public AuthenticationService(BCryptPasswordEncoder passwordEncoder) {
@@ -58,6 +73,19 @@ public class AuthenticationService {
 
         // If user does not exist, create a new user and return true
         userRepository.save(newUser);
+
+        // Kafka: Send message into kafka message queue for welcome email to be sent to the new user
+        try {
+            EmailDto emailDto = new EmailDto();
+            emailDto.setTo(email);
+            emailDto.setSubject("Welcome to Scaler");
+            emailDto.setBody("Have a pleasant learning experience.");
+            emailDto.setFrom("nishanttomar211@gmail.com");
+
+            kafkaProducerClient.sendMessage("user_signedup", objectMapper.writeValueAsString(emailDto));
+        } catch (JsonProcessingException exception) {
+            throw new RuntimeException(exception.getMessage());
+        }
 
         return true;
     }
